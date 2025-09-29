@@ -8,9 +8,9 @@
     
     
     
-    <main class="flex-grow flex items-center justify-center bg-corfundo">
+    <main class="flex-grow flex  bg-corfundo">
         
-      <p>Conteúdo da Página Principal</p>
+      <SeriesShelf/>
     </main>
     
   </div>
@@ -20,13 +20,15 @@
 <script>
 import TheHeader from '../components/TheHeader.vue';
 import Busca from '../components/Busca.vue';
+import SeriesShelf from '../components/SeriesShelf.vue';
 
 export default {
     name: 'HomeViews',
 
     components: {
         TheHeader,
-        Busca
+        Busca,
+        SeriesShelf
     }
    
 }

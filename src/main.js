@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from "pinia";
 import './style.css'
 import App from './App.vue'
 import router from './router'
@@ -12,6 +13,7 @@ import { faUser as faUserRegular } from '@fortawesome/free-regular-svg-icons'
 library.add(faUser, faRightFromBracket, faHeart, faUserRegular, faMagnifyingGlass)
 
 const app = createApp(App)
+const pinia = (createPinia())
 
 app.use(router)
 app.component('font-awesome-icon', FontAwesomeIcon)
