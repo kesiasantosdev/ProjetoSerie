@@ -39,7 +39,7 @@
 <script setup>
 import Logo from './Logo.vue';
 import { ref } from 'vue';
-import axios from 'axios';
+import api from '../services/api';
 import { useUserStore } from '../stores/userStore';
 import { useRouter } from 'vue-router';
 
@@ -61,7 +61,7 @@ async function login() {
             email: email.value,
             senha: senha.value
         };
-        const response = await axios.post('https://localhost:7107/api/UsuarioHub/login', dadosParaEnviar);
+        const response = await api.post('UsuarioHub/login', dadosParaEnviar);
         userStore.login(response.data.token, response.data.user);
         feedbackMessage.value = `Login realizado com sucesso! Bem-vindo(a), ${userStore.user.nome}!`;
 

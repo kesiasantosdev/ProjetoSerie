@@ -58,15 +58,22 @@
 
 <script setup>
 import { ref, watch, onMounted } from 'vue';
+import { useUserStore } from '../stores/userStore';
 import axios from 'axios';
 
+const userStore = useUserStore();
 const textoDaBusca = ref('');
 const resultados = ref([]);
 const carregando = ref(false);
 const feedbackMessage = ref('');
 const isError = ref(false);
-const idsFavoritos = ref([]);
 let debounceTimer = null;
+
+onMounted(() => {
+  if (userStore.seriesFavoritos.length === 0) {
+    userStore.buscarFavoritos();
+  }
+});
 
 watch(textoDaBusca, (textoNovo) => {
   clearTimeout(debounceTimer);
@@ -103,16 +110,15 @@ async function realizarBusca(textoParaBusca) {
 }
 
 function isFavorito(serieId) {
-  return idsFavoritos.value.includes(serieId);
+  return userStore.idsSeriesFavoritos.has(serieId);
 }
+
 async function adicionarFavorito(serie) {
   try {
-    await axios.post('https://localhost:7107/api/SerieHub/adicionar-favorito', { tmdbId: serie.id });
-    idsFavoritos.value.push(serie.id);
+    await userStore.adicionarFavorito(serie)
     feedbackMessage.value = `${serie.name} foi adicionada aos seus favoritos!`;
     isError.value = false;
   } catch (error) {
-    console.error('Erro ao adicionar aos favoritos:', error);
     isError.value = true;
     feedbackMessage.value = "Ops! Tivemos um problema ao adicionar aos favoritos. Por favor, tente novamente mais tarde.";
   }

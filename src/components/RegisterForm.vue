@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import axios from 'axios';
+import api from '../services/api';
 import Logo from './Logo.vue';
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
@@ -115,11 +115,7 @@ async function registrar() {
     };
     console.log('pedido enviado', dadosParaEnviar);
     try {
-        const response = await axios.post('https://localhost:7107/api/UsuarioHub/registrar', dadosParaEnviar, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
+         const response = await api.post('/UsuarioHub/registrar', dadosParaEnviar);
         console.log("dados recebido", response.data);
         isError.value = false;
         feedbackMessage.value = 'Registro bem-sucedido! Redirecionando para o login...';
