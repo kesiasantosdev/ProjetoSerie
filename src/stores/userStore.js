@@ -32,6 +32,31 @@ export const useUserStore = defineStore('user', () => {
         }
     }
 
+    async function removerFavorito(serieDbId, serieTmdbId) {
+        try {
+            await api.delete(`SerieHub/${serieDbId}`);
+            seriesFavoritos.value = seriesFavoritos.value.filter(serie => serie.dbId !== serieDbId);
+            idsSeriesFavoritos.value.delete(serieTmdbId);
+        } catch (error) {
+            console.error("Erro ao remover série dos favoritos:", error);
+            throw error;
+        }
+    }
+
+    async function atualizarProgresso(serieDbId, novaTemporada) {
+        try {
+            await api.put(`SerieHub/${serieDbId}`, { temporadaAtual: novaTemporada });
+            const serieParaAtualizar = seriesFavoritos.value.find(serie => serie.dbId === serieDbId);
+            if (serieParaAtualizar) {
+                serieParaAtualizar.temporadaAtual = novaTemporada;
+            }
+        } catch (error) {
+            console.error("Erro ao atualizar progresso da série:", error);
+            throw error;
+        }
+        
+    }
+
     function login(userToken, newUser) {
         token.value = userToken;
         user.value = newUser;
@@ -68,5 +93,5 @@ export const useUserStore = defineStore('user', () => {
 
     tentarAutoLogin();
 
-    return { user, token, seriesFavoritos, idsSeriesFavoritos, buscarFavoritos, adicionarFavorito, login, logout, tentarAutoLogin };
+    return { user, token, seriesFavoritos, idsSeriesFavoritos, buscarFavoritos, adicionarFavorito,removerFavorito,atualizarProgresso, login, logout, tentarAutoLogin };
 });
