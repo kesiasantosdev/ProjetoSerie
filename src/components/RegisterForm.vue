@@ -9,28 +9,28 @@
                 {{ feedbackMessage }}
             </div>
 
-            <label for="" class="text-white text-sm">Nome completo</label><br>
-            <input v-model="nome" id="nome" type="text" title="Preencha este campo." placeholder="Seu nome" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
+            <label for="nome-completo" class="text-white text-sm">Nome completo</label><br>
+            <input v-model="nome" id="nome-completo" type="text" title="Preencha este campo." placeholder="Seu nome" autocomplete="name" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
             placeholder:text-slate-400 
             focus:outline-none focus:ring-2  focus:ring-purple-500 "
                 :class="{ 'border-red-500': errors.nome, 'border-slate-400': !errors.nome }"><br>
             <p v-if="errors.nome" class="text-red-500 text-sm mt-1">{{ errors.nome }}</p>
 
-            <label for="" class="text-white text-sm">Email</label><br>
-            <input v-model="email" type="email" title="Preencha este campo." placeholder="seu@email.com" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
+            <label for="email-registro" class="text-white text-sm">Email</label><br>
+            <input v-model="email" id="email-registro" type="email" title="Preencha este campo." placeholder="seu@email.com" autocomplete="email" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
                 placeholder:text-slate-400 text-sm
                 focus:outline-none focus:ring-2  focus:ring-purple-500 "
                 :class="{ 'border-red-500': errors.email, 'border-slate-400': !errors.email }"><br>
             <p v-if="errors.email" class="text-red-500 text-sm mt-1">{{ errors.email }}</p>
 
-            <label for="" class="text-white text-sm">Senha</label><br>
-            <input v-model="senha" type="password" title="Preencha este campo." placeholder=" " name="" id="" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
+            <label for="senha-registro" class="text-white text-sm">Senha</label><br>
+            <input v-model="senha" id="senha-registro" type="password" title="Preencha este campo." autocomplete="new-password" name="" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
             focus:outline-none focus:ring-2  focus:ring-purple-500 "
                 :class="{ 'border-red-500': errors.senha, 'border-slate-400': !errors.senha }"><br>
             <p v-if="errors.senha" class="text-red-500 text-sm mt-1">{{ errors.senha }}</p>
 
-            <label for="" class="text-white text-sm">Confirmar senha</label><br>
-            <input v-model="confirmarSenha" type="password" name="" id="" title="Preencha este campo." class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
+            <label for="confirmar-senha" class="text-white text-sm">Confirmar senha</label><br>
+            <input v-model="confirmarSenha" id="confirmar-senha" type="password" name=""  title="Preencha este campo." autocomplete="new-password" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
             focus:outline-none focus:ring-2  focus:ring-purple-500"
                 :class="{ 'border-red-500': errors.confirmarSenha, 'border-slate-400': !errors.confirmarSenha }"><br>
             <p v-if="errors.confirmarSenha" class="text-red-500 text-sm mt-1">{{ errors.confirmarSenha }}</p>
@@ -43,7 +43,7 @@
             hover:from-purple-700 hover:to-pink-600
             ">{{ isLoading ? 'Criando...' : 'Criar conta' }}</button>
 
-            <router-link to="/login" class="my-1 text-purple-400  
+            <router-link to="/auth/login" class="my-1 text-purple-400  
             hover:text-purple-300 ">
                 <p class="text-[15px] text-center hover:cursor-pointer">Já tenho uma conta? Entre aqui
                 </p>
@@ -98,6 +98,9 @@ function limparFormulario() {
 }
 
 async function registrar() {
+    feedbackMessage.value = '';
+    isError.value = false;
+    
     const isFormValid = validarForm();
     if (!isFormValid) {
         return;
@@ -122,7 +125,7 @@ async function registrar() {
         feedbackMessage.value = 'Registro bem-sucedido! Redirecionando para o login...';
         limparFormulario();
         setTimeout(() => {
-            router.push('/login');
+            router.push('/auth/login');
         }, 2000);
 
     } catch (error) {
