@@ -13,8 +13,9 @@ import { faUser as faUserRegular } from '@fortawesome/free-regular-svg-icons'
 library.add(faUser, faRightFromBracket, faHeart, faUserRegular, faMagnifyingGlass)
 
 const app = createApp(App)
-const pinia = (createPinia())
+const pinia = createPinia()
 
+app.use(pinia)
 app.use(router)
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.mount('#app')

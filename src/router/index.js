@@ -10,32 +10,30 @@ const routes = [
     path: '/auth',
     component: AuthView,
     children: [
+      {
+        path: 'login',
+        name: 'login',
+        component: LoginForm
+      },
+      {
+        path: 'registro',
+        name: 'registro',
+        component: RegisterForm
+      }]},
+      {
+        path: '/home',
+        name: 'home',
+        component: HomeView
+      },
   {
-    path: '/login',
-    name: 'login',
-    component: LoginForm
-  },
-  {
-    path: '/registro',
-    name: 'registro',
-    component: RegisterForm
-  },
-  {
-  path: '/home',
-  name: 'home',
-  component: HomeView
-}
-]
-},
-{
-  path: '/',
-  redirect: '/auth/login'
-}
+    path: '/',
+    redirect: '/auth/login'
+  }
 ];
 
-const router = createRouter ({
-    history: createWebHistory(),
-    routes,
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
 })
 
 export default router;

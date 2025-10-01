@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="realizarBusca" class=" items-center justify-center flex">
+    <form class=" items-center justify-center flex">
       <div class="relative w-full max-w-md m-20">
         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300">
           <font-awesome-icon icon="fa-solid fa-magnifying-glass" />
@@ -11,6 +11,13 @@
       </div>
     </form>
 
+    <div class="px-20 mb-4 flex justify-center">
+      <div v-if="feedbackMessage" :class="isError ? 'bg-red-500' : 'bg-green-500'"
+        class="text-white text-center p-3 my-4 text-sm rounded-lg w-full max-w-md">
+        {{ feedbackMessage }}
+      </div>
+    </div>
+
     <div class="items-center justify-center px-30 mb-10 ">
       <div v-if="carregando" class="text-center">
         <p class="text-white text-xl">Buscando séries...</p>
@@ -19,15 +26,26 @@
         <div v-for="serie in resultados" :key="serie.id" class="bg-slate-800 rounded-lg overflow-hidden shadow-lg             transition-all duration-600 ease-in-out
             hover:scale-105
             hover:shadow-xl">
-          <img :src="'https://image.tmdb.org/t/p/w500' + serie.poster_Path" :alt="'Pôster de ' + serie.name"
+          <img :src="'https://image.tmdb.org/t/p/w500' + (serie.poster_path || serie.urlPoster)" :alt="'Pôster de ' + serie.name"
             class="w-full h-100">
           <h3 class="text-white p-3 font-bold text-center ">{{ serie.name }}</h3>
+          <div class="text-white text-center"><span>{{ serie.number_of_seasons }} temporadas</span></div>
           <div class="flex justify-center p-4">
-            <button type="submit" class="bg-pink-500 text-center my-5 px-2 py-2 flex justify-center items-center border rounded-xl mt-6 w-45 m-2  text-white border-none
-            bg-gradient-to-r from-purple-500 to-pink-500 
-            hover:from-purple-700 hover:to-pink-600
-            ">+ Adicionar aos favotitos</button>
-          </div>
+
+    <button v-if="!isFavorito(serie.id)" 
+            @click="adicionarFavorito(serie)" 
+            type="button" 
+            class="bg-pink-500 text-center my-5 px-4 py-2 flex justify-center items-center border rounded-xl text-white border-none bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-700 hover:to-pink-600">
+        + Adicionar aos favoritos
+    </button>
+    
+    <button v-else 
+            disabled 
+            class="bg-green-600 text-center my-5 px-4 py-2 flex justify-center items-center border rounded-xl text-white border-none cursor-not-allowed">
+        ✓ Já está nos favoritos
+    </button>
+
+</div>
 
         </div>
       </div>
@@ -39,35 +57,64 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import axios from 'axios';
 
 const textoDaBusca = ref('');
 const resultados = ref([]);
 const carregando = ref(false);
+const feedbackMessage = ref('');
+const isError = ref(false);
+const idsFavoritos = ref([]);
+let debounceTimer = null;
 
-async function realizarBusca() {
-  if (textoDaBusca.value.trim() === '') {
-    resultados.value = [];
-    return;
-  }
+watch(textoDaBusca, (textoNovo) => {
+  clearTimeout(debounceTimer);
 
+  debounceTimer = setTimeout(() => {
+    if (textoNovo.trim() === '') {
+      resultados.value = [];
+    } else {
+      realizarBusca(textoNovo);
+    }
+  }, 500);
+});
+
+async function realizarBusca(textoParaBusca) {
+  console.log(`Buscando por: ${textoParaBusca}`);
   carregando.value = true;
   resultados.value = [];
 
   try {
     const response = await axios.get('https://localhost:7107/api/SerieHub/buscar', {
       params: {
-        nome: textoDaBusca.value
+        nome: textoParaBusca
       }
     });
     resultados.value = response.data;
-    console.log("A cozinha respondeu:", response.data);
+
   } catch (error) {
-    console.error("A cozinha gritou que deu erro!", error);
-    alert("Ops! Não foi possível buscar as séries.");
+    console.error('Erro ao buscar séries:', error);
+    isError.value = true
+    feedbackMessage.value = "Ops! Tivemos um problema ao buscar as séries. Por favor, tente novamente mais tarde.";
   } finally {
     carregando.value = false;
+  }
+}
+
+function isFavorito(serieId) {
+  return idsFavoritos.value.includes(serieId);
+}
+async function adicionarFavorito(serie) {
+  try {
+    await axios.post('https://localhost:7107/api/SerieHub/adicionar-favorito', { tmdbId: serie.id });
+    idsFavoritos.value.push(serie.id);
+    feedbackMessage.value = `${serie.name} foi adicionada aos seus favoritos!`;
+    isError.value = false;
+  } catch (error) {
+    console.error('Erro ao adicionar aos favoritos:', error);
+    isError.value = true;
+    feedbackMessage.value = "Ops! Tivemos um problema ao adicionar aos favoritos. Por favor, tente novamente mais tarde.";
   }
 }
 </script>

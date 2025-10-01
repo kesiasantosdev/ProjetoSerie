@@ -1,5 +1,4 @@
 <template>
-    <br>
     <div class="flex justify-center items-center content-center  ">
 
         <form @submit.prevent="login" action="" class="bg-principal p-10 py-14 w-100 h-auto rounded-xl ">
@@ -10,13 +9,15 @@
                 {{ feedbackMessage }}
             </div>
 
-            <label for="" class="text-white text-sm">Email</label><br>
-            <input v-model="email" type="email" title="Preencha este campo." placeholder="seu@email.com" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
+            <label for="email-login" class="text-white text-sm">Email</label><br>
+            <input v-model="email" id="email-login" type="email" title="Preencha este campo."
+                placeholder="seu@email.com" autocomplete="email" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
                 placeholder:text-slate-400 text-sm
                 focus:outline-none focus:ring-2  focus:ring-purple-500 border-slate-400"><br>
 
-            <label for="" class="text-white text-sm">Senha</label><br>
-            <input v-model="senha" type="password" title="Preencha este campo." placeholder=" " name="" id="" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
+            <label for="senha-login" class="text-white text-sm">Senha</label><br>
+            <input v-model="senha" id="senha-login" type="password" title="Preencha este campo."
+                autocomplete="current-password" name="" class="bg-slate-600  border rounded-xl my-1 p-4 w-80 h-10 text-white
             focus:outline-none focus:ring-2  focus:ring-purple-500 border-slate-400"><br>
 
             <button type="submit" :disabled="isLoading" class="bg-pink-500 text-center my-5 px-2 py-2 border rounded-xl mt-6 w-80 text-white border-none
@@ -26,9 +27,10 @@
             hover:shadow-xl
             hover:from-purple-700 hover:to-pink-600
             ">{{ isLoading ? 'Entrando...' : 'Entrar' }}</button>
-            <router-link to="registro">
-                <p class="text-[15px] text-center "><a href="#" class="my-1 text-purple-400  
-            hover:text-purple-300 ">Não tem uma conta? Registre-se</a></p>
+            <router-link to="/auth/registro" class="my-1 text-purple-400 hover:text-purple-300">
+                <p class="text-[15px] text-center">
+                    Não tem uma conta? Registre-se
+                </p>
             </router-link>
         </form>
     </div>
@@ -61,8 +63,6 @@ async function login() {
         };
         const response = await axios.post('https://localhost:7107/api/UsuarioHub/login', dadosParaEnviar);
         userStore.login(response.data.token, response.data.user);
-        const token = response.data.token;
-        localStorage.setItem('user_token', token);
         feedbackMessage.value = `Login realizado com sucesso! Bem-vindo(a), ${userStore.user.nome}!`;
 
         setTimeout(() => {
@@ -75,7 +75,7 @@ async function login() {
         } else {
             feedbackMessage.value = 'Ocorreu um erro ao tentar fazer login. Tente novamente.';
         }
-} finally {
+    } finally {
         isLoading.value = false;
     }
 }
