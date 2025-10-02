@@ -31,9 +31,31 @@ const routes = [
   }
 ];
 
+
 const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+// Guard de rota para proteger /home
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = !!localStorage.getItem('user_token');
+
+  // Proteger rota /home
+  if (to.path === '/home') {
+    if (!isLoggedIn) {
+      next({ path: '/auth/login' });
+      return;
+    }
+  }
+
+  // Se estiver logado e tentar acessar login ou registro, redireciona para home
+  if (isLoggedIn && (to.path === '/auth/login' || to.path === '/auth/registro')) {
+    next({ path: '/home' });
+    return;
+  }
+
+  next();
+});
 
 export default router;

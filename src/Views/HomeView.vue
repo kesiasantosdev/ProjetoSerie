@@ -6,10 +6,7 @@
         <Busca /> 
     </div> 
     
-    
-    
     <main class="flex-grow flex  bg-corfundo">
-        
       <SeriesShelf/>
     </main>
     
