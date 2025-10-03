@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { jwtDecode } from 'jwt-decode';
 import api from '../services/api';
+import api from '../services/api';
 
 export const useUserStore = defineStore('user', () => {
     const user = ref(null);
@@ -67,25 +68,23 @@ export const useUserStore = defineStore('user', () => {
         token.value = null;
         user.value = null;
         localStorage.removeItem('user_token');
+        seriesFavoritas.value = []; 
+        idsFavoritos.value.clear();
     }
 
-    function tentarAutoLogin() {
+    function tryAutoLogin() {
         const tokenNoStorage = localStorage.getItem('user_token');
-
         if (tokenNoStorage) {
             try {
                 const dadosDecodificados = jwtDecode(tokenNoStorage);
-                
                 token.value = tokenNoStorage;
                 user.value = {
                     nome: dadosDecodificados.name, 
                     email: dadosDecodificados.email, 
                     id: dadosDecodificados.sub 
                 };
-
             } catch (error) {
-                
-                console.error("Token inválido no localStorage", error);
+                console.error("Token inválido no localStorage, limpando...", error);
                 logout();
             }
         }
